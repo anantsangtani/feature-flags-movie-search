@@ -46,16 +46,16 @@ application-local.properties
 
 # ---- FRONTEND / REACT ----
 # Dependencies
-frontend/node_modules/
-frontend/.pnp/
-frontend/.pnp.js
+node_modules/
+.pnp/
+.pnp.js
 
 # Build output
-frontend/build/
-frontend/dist/
+build/
+dist/
 
 # React test coverage
-frontend/coverage/
+coverage/
 
 # Debug files
 npm-debug.log*
@@ -64,10 +64,10 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Local environment
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # ---- OTHER ----
 # Package manager lock files (optional, if you don't want to commit them)

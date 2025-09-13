@@ -95,14 +95,9 @@ public class RedisConfig {
         /**
          * Handle incoming flag change messages
          */
-        public void handleFlagChange(String message) {
+        public void handleFlagChange(FlagChangeEvent event) {
             try {
-                logger.debug("Received flag change message: {}", message);
-
-                // Parse the JSON message
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.registerModule(new JavaTimeModule());
-                FlagChangeEvent event = objectMapper.readValue(message, FlagChangeEvent.class);
+                logger.debug("Received flag change event: {}", event);
 
                 logger.info("Processing flag change event: {} - {} - {}",
                         event.getFlagName(), event.getEnabled(), event.getChangeType());
@@ -111,8 +106,7 @@ public class RedisConfig {
                 flagCacheService.updateFlag(event);
 
             } catch (Exception e) {
-                logger.error("Error processing flag change message: {}", message, e);
-                // Don't throw exception - we don't want to break the message listener
+                logger.error("Error processing flag change event: {}", event, e);
             }
         }
     }

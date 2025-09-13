@@ -160,6 +160,7 @@ public class FeatureFlagService {
         logger.info("Toggled feature flag: {} to {}", updatedFlag.getName(), updatedFlag.getEnabled());
 
         // Publish update event
+        logger.info("Starting to Publish feature flag: {} to {}", updatedFlag.getName(), updatedFlag.getEnabled());
         messagingService.publishFlagUpdated(updatedFlag.getName(), updatedFlag.getEnabled());
 
         return new FeatureFlagResponseDTO(updatedFlag);
