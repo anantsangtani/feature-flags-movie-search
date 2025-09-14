@@ -27,7 +27,7 @@ A microservices system demonstrating feature flag management with real-time upda
 ### Setup & Run
 ```bash
 # 1. Clone and configure
-git clone <repository-url>
+git clone https://github.com/anantsangtani/feature-flags-movie-search.git
 cd feature-flags-movie-search
 
 # 2. Set your OMDB API key
@@ -139,4 +139,5 @@ docker exec -it feature-flags-redis redis-cli ping
 
 
 ---
+
 
