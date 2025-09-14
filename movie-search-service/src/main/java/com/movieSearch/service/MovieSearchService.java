@@ -133,6 +133,14 @@ public class MovieSearchService {
         );
     }
 
+    /**
+     * Refresh feature flags from Feature Flag Service
+     */
+    public void refreshFeatureFlags() {
+        logger.info("Manually refreshing feature flags");
+        flagCacheService.refreshCache();
+    }
+
     // Health DTO
     public static class ServiceHealthDTO {
         private final String status;

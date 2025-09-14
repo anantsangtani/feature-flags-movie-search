@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*") // For development - configure properly for production
@@ -68,6 +70,29 @@ public class MovieSearchController {
 
         MovieSearchService.FeatureFlagStatusDTO flagStatus = movieSearchService.getFeatureFlagStatus();
         return ResponseEntity.ok(flagStatus);
+    }
+
+    /**
+     * Refresh feature flag cache (manual sync)
+     */
+    @PostMapping("/flags/refresh")
+    public ResponseEntity<?> refreshFlags() {
+        logger.info("POST /api/flags/refresh - Manual flag refresh requested");
+
+        try {
+            movieSearchService.refreshFeatureFlags();
+            MovieSearchService.FeatureFlagStatusDTO flagStatus = movieSearchService.getFeatureFlagStatus();
+            return ResponseEntity.ok(Map.of(
+                    "message", "Feature flags refreshed successfully",
+                    "flagStatus", flagStatus
+            ));
+        } catch (Exception e) {
+            logger.error("Failed to refresh feature flags", e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Failed to refresh feature flags",
+                    "message", e.getMessage()
+            ));
+        }
     }
 
     /**
