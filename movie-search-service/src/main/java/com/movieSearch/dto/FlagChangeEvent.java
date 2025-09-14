@@ -1,22 +1,26 @@
 package com.movieSearch.dto;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FlagChangeEvent {
 
+    @JsonProperty("flagName")
     private String flagName;
+
+    @JsonProperty("enabled")
     private Boolean enabled;
-    private LocalDateTime timestamp;
+
+    @JsonProperty("changeType")
     private String changeType;
 
-    // Constructors
     public FlagChangeEvent() {}
 
     public FlagChangeEvent(String flagName, Boolean enabled, String changeType) {
         this.flagName = flagName;
         this.enabled = enabled;
         this.changeType = changeType;
-        this.timestamp = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -36,19 +40,20 @@ public class FlagChangeEvent {
         this.enabled = enabled;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getChangeType() {
         return changeType;
     }
 
     public void setChangeType(String changeType) {
         this.changeType = changeType;
+    }
+
+    @Override
+    public String toString() {
+        return "FlagChangeEvent{" +
+                "flagName='" + flagName + '\'' +
+                ", enabled=" + enabled +
+                ", changeType='" + changeType + '\'' +
+                '}';
     }
 }

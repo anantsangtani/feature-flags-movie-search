@@ -32,8 +32,8 @@ function App() {
 
     checkFlags();
     
-    // Poll for flag changes every 30 seconds
-    const interval = setInterval(checkFlags, 30000);
+    // Poll for flag changes every 5 seconds
+    const interval = setInterval(checkFlags, 5000);
     
     return () => clearInterval(interval);
   }, []);

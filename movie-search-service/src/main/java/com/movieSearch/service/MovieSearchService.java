@@ -16,11 +16,12 @@ public class MovieSearchService {
 
     private final OMDBClient omdbClient;
     private final FeatureFlagCacheService flagCacheService;
-
+    private final FeatureFlagSyncService syncService;
     @Autowired
-    public MovieSearchService(OMDBClient omdbClient, FeatureFlagCacheService flagCacheService) {
+    public MovieSearchService(OMDBClient omdbClient, FeatureFlagCacheService flagCacheService, FeatureFlagSyncService syncService) {
         this.omdbClient = omdbClient;
         this.flagCacheService = flagCacheService;
+        this.syncService = syncService;
     }
 
     /**
@@ -138,7 +139,7 @@ public class MovieSearchService {
      */
     public void refreshFeatureFlags() {
         logger.info("Manually refreshing feature flags");
-        flagCacheService.refreshCache();
+        syncService.syncWithFeatureFlagService();
     }
 
     // Health DTO

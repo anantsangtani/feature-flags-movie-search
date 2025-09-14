@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: movie-search-service
+
+  profiles:
+    active: docker
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 2
+        queue-capacity: 500
+
+# Feature Flag Service Configuration
+feature-flag:
+  service:
+    url: ${FEATURE_FLAG_SERVICE_URL:http://feature-flag-service:8080}
+
+# OMDB API Configuration
+omdb:
+  api:
+    key: ${OMDB_API_KEY:your_api_key_here}
+    url: ${OMDB_API_URL:http://www.omdbapi.com/}
+
+# Server Configuration
+server:
+  port: 8081
+
+# Logging Configuration
+logging:
+  level:
+    com.movieSearch: DEBUG
+    org.springframework.data.redis: DEBUG
+    org.springframework.web.client: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+---
+# Docker profile configuration
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+feature-flag:
+  service:
+    url: http://feature-flag-service:8080
+
+# Less verbose logging for Docker
+logging:
+  level:
+    com.movieSearch: INFO
+    org.springframework.data.redis: WARN
+    org.springframework.web.client: WARN

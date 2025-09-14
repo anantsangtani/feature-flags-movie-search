@@ -97,9 +97,9 @@ export const Header: React.FC<HeaderProps> = ({
           <StatusBadge isMaintenanceMode={isMaintenanceMode}>
             {isMaintenanceMode ? 'Maintenance Mode' : 'Online'}
           </StatusBadge>
-          <ThemeButton onClick={onThemeToggle} title="Toggle theme">
+          {/* <ThemeButton onClick={onThemeToggle} title="Toggle theme">
             {isDarkMode ? '☀️' : '🌙'}
-          </ThemeButton>
+          </ThemeButton> */}
         </HeaderActions>
       </HeaderContent>
     </HeaderContainer>

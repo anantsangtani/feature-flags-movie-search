@@ -62,14 +62,6 @@ export const Header: React.FC = () => {
         <Logo>
           <LogoText>🚩 Feature Flags</LogoText>
         </Logo>
-        <Nav>
-          <NavLink to="/" $isActive={location.pathname === '/'}>
-            All Flags
-          </NavLink>
-          <NavLink to="/create" $isActive={location.pathname === '/create'}>
-            Create Flag
-          </NavLink>
-        </Nav>
       </HeaderContent>
     </HeaderContainer>
   );

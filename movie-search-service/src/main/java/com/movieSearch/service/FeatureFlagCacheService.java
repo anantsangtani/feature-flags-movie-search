@@ -85,22 +85,14 @@ public class FeatureFlagCacheService {
     }
 
     /**
-     * Clear all cached flags (for testing)
+     * Clear all cached flags (for testing and sync)
      */
     public void clearCache() {
         flagCache.clear();
-        logger.info("Cleared feature flag cache");
-    }
-
-    /**
-     * Manually trigger sync (for testing or periodic refresh)
-     */
-    public void refreshCache() {
-        logger.info("Manual cache refresh requested");
-        syncWithFeatureFlagService();
-    }
-
-    private void syncWithFeatureFlagService() {
+        // Restore defaults for critical flags
+        flagCache.put(DARK_MODE_FLAG, false);
+        flagCache.put(MAINTENANCE_MODE_FLAG, false);
+        logger.info("Cleared feature flag cache and restored defaults");
     }
 
     /**

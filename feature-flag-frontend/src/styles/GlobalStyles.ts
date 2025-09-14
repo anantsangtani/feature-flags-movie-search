@@ -42,11 +42,6 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
   a {
     color: ${({ theme }) => theme.colors.primary[500]};
     text-decoration: none;
-
-    &:hover {
-      color: ${({ theme }) => theme.colors.primary[600]};
-      text-decoration: underline;
-    }
   }
 
   button {
