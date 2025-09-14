@@ -18,8 +18,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - feature-flags-network
 
   redis:
     image: redis:7-alpine
@@ -34,8 +32,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - feature-flags-network
 
   feature-flag-service:
     build: ./feature-flag-service
@@ -58,8 +54,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    networks:
-      - feature-flags-network
 
   movie-search-service:
     build: ./movie-search-service
@@ -78,56 +72,27 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    networks:
-      - feature-flags-network
 
-  # Feature Flag Frontend
   feature-flag-frontend:
-    build:
-      context: ./feature-flag-frontend
-      dockerfile: Dockerfile
+    build: ./feature-flag-frontend
     container_name: feature-flag-frontend
+    depends_on:
+      - feature-flag-service
     environment:
       - REACT_APP_API_URL=http://localhost:8080/api
     ports:
-      - "3000:3000"
-    depends_on:
-      feature-flag-service:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    networks:
-      - feature-flags-network
+      - "3000:80"
 
-  # Movie Search Frontend
   movie-search-frontend:
-    build:
-      context: ./movie-search-frontend
-      dockerfile: Dockerfile
+    build: ./movie-search-frontend
     container_name: movie-search-frontend
+    depends_on:
+      - movie-search-service
     environment:
       - REACT_APP_API_URL=http://localhost:8081/api
     ports:
-      - "3001:3000"
-    depends_on:
-      movie-search-service:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    networks:
-      - feature-flags-network
-
-networks:
-  feature-flags-network:
-    driver: bridge
+      - "3001:80"
 
 volumes:
   postgres_data:
-    driver: local
   redis_data:

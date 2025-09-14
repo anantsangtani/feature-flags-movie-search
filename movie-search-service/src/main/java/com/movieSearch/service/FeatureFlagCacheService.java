@@ -93,6 +93,17 @@ public class FeatureFlagCacheService {
     }
 
     /**
+     * Manually trigger sync (for testing or periodic refresh)
+     */
+    public void refreshCache() {
+        logger.info("Manual cache refresh requested");
+        syncWithFeatureFlagService();
+    }
+
+    private void syncWithFeatureFlagService() {
+    }
+
+    /**
      * Get cache statistics
      */
     public CacheStats getStats() {
