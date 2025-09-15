@@ -97,9 +97,6 @@ cd movie-search-frontend && npm start    # Port 3001
 cd feature-flag-service && ./mvnw test
 cd movie-search-service && ./mvnw test
 
-# Frontend tests (optional)
-cd feature-flag-frontend && npm test
-cd movie-search-frontend && npm test
 ```
 
 ## API Endpoints
@@ -139,5 +136,6 @@ docker exec -it feature-flags-redis redis-cli ping
 
 
 ---
+
 
 
