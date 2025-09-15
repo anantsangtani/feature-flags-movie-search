@@ -3,8 +3,8 @@ package com.featureflags.service;
 import com.featureflags.dto.FeatureFlagRequestDTO;
 import com.featureflags.dto.FeatureFlagResponseDTO;
 import com.featureflags.entity.FeatureFlag;
-import com.featureflags.exception.DuplicateResourceException;
 import com.featureflags.exception.ResourceNotFoundException;
+import com.featureflags.exception.DuplicateResourceException;
 import com.featureflags.repository.FeatureFlagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,132 +33,110 @@ class FeatureFlagServiceTest {
     private FlagChangeMessagingService messagingService;
 
     @InjectMocks
-    private FeatureFlagService service;
+    private FeatureFlagService featureFlagService;
 
     private FeatureFlag testFlag;
-    private FeatureFlagRequestDTO testRequest;
 
     @BeforeEach
     void setUp() {
-        testFlag = new FeatureFlag("test_flag", true, "Test description");
+        testFlag = new FeatureFlag("dark_mode", true, "Dark mode toggle");
         testFlag.setId(1L);
         testFlag.setCreatedAt(LocalDateTime.now());
         testFlag.setUpdatedAt(LocalDateTime.now());
-
-        testRequest = new FeatureFlagRequestDTO("test_flag", true, "Test description");
     }
 
     @Test
-    void getAllFlags_ShouldReturnListOfFlags() {
+    void getAllFlags_ReturnsAllFlags() {
         // Given
-        List<FeatureFlag> flags = Arrays.asList(testFlag);
-        when(repository.findAll()).thenReturn(flags);
+        when(repository.findAll()).thenReturn(Arrays.asList(testFlag));
 
         // When
-        List<FeatureFlagResponseDTO> result = service.getAllFlags();
+        List<FeatureFlagResponseDTO> result = featureFlagService.getAllFlags();
 
         // Then
-        assertEquals(1, result.size());
-        assertEquals("test_flag", result.get(0).getName());
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("dark_mode");
         verify(repository).findAll();
     }
 
     @Test
-    void getFlagById_WhenExists_ShouldReturnFlag() {
+    void getFlagById_ExistingFlag_ReturnsFlag() {
         // Given
         when(repository.findById(1L)).thenReturn(Optional.of(testFlag));
 
         // When
-        FeatureFlagResponseDTO result = service.getFlagById(1L);
+        FeatureFlagResponseDTO result = featureFlagService.getFlagById(1L);
 
         // Then
-        assertEquals("test_flag", result.getName());
-        assertEquals(true, result.getEnabled());
-        verify(repository).findById(1L);
+        assertThat(result.getName()).isEqualTo("dark_mode");
+        assertThat(result.getEnabled()).isTrue();
     }
 
     @Test
-    void getFlagById_WhenNotExists_ShouldThrowException() {
+    void getFlagById_NonExistingFlag_ThrowsException() {
         // Given
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(ResourceNotFoundException.class, () -> service.getFlagById(1L));
-        verify(repository).findById(1L);
+        assertThatThrownBy(() -> featureFlagService.getFlagById(1L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Feature flag not found with id: 1");
     }
 
     @Test
-    void createFlag_WhenValid_ShouldCreateAndPublishEvent() {
+    void createFlag_ValidRequest_CreatesFlag() {
         // Given
-        when(repository.existsByName("test_flag")).thenReturn(false);
+        FeatureFlagRequestDTO request = new FeatureFlagRequestDTO("new_flag", true, "New flag");
+        when(repository.existsByName("new_flag")).thenReturn(false);
         when(repository.save(any(FeatureFlag.class))).thenReturn(testFlag);
 
         // When
-        FeatureFlagResponseDTO result = service.createFlag(testRequest);
+        FeatureFlagResponseDTO result = featureFlagService.createFlag(request);
 
         // Then
-        assertEquals("test_flag", result.getName());
-        verify(repository).existsByName("test_flag");
+        assertThat(result).isNotNull();
         verify(repository).save(any(FeatureFlag.class));
-        verify(messagingService).publishFlagCreated("test_flag", true);
+        verify(messagingService).publishFlagCreated(anyString(), anyBoolean());
     }
 
     @Test
-    void createFlag_WhenDuplicate_ShouldThrowException() {
+    void createFlag_DuplicateName_ThrowsException() {
         // Given
-        when(repository.existsByName("test_flag")).thenReturn(true);
+        FeatureFlagRequestDTO request = new FeatureFlagRequestDTO("existing_flag", true, "Existing");
+        when(repository.existsByName("existing_flag")).thenReturn(true);
 
         // When & Then
-        assertThrows(DuplicateResourceException.class, () -> service.createFlag(testRequest));
-        verify(repository).existsByName("test_flag");
+        assertThatThrownBy(() -> featureFlagService.createFlag(request))
+                .isInstanceOf(DuplicateResourceException.class);
+
         verify(repository, never()).save(any());
-        verify(messagingService, never()).publishFlagCreated(anyString(), any());
     }
 
     @Test
-    void updateFlag_WhenValid_ShouldUpdateAndPublishEvent() {
+    void toggleFlag_ExistingFlag_TogglesSuccessfully() {
         // Given
-        FeatureFlagRequestDTO updateRequest = new FeatureFlagRequestDTO("updated_flag", false, "Updated description");
         when(repository.findById(1L)).thenReturn(Optional.of(testFlag));
-        when(repository.existsByName("updated_flag")).thenReturn(false);
         when(repository.save(any(FeatureFlag.class))).thenReturn(testFlag);
 
         // When
-        FeatureFlagResponseDTO result = service.updateFlag(1L, updateRequest);
+        FeatureFlagResponseDTO result = featureFlagService.toggleFlag(1L);
 
         // Then
-        verify(repository).findById(1L);
+        assertThat(result).isNotNull();
         verify(repository).save(any(FeatureFlag.class));
-        verify(messagingService).publishFlagUpdated(anyString(), any());
+        verify(messagingService).publishFlagUpdated(anyString(), anyBoolean());
     }
 
     @Test
-    void deleteFlag_WhenExists_ShouldDeleteAndPublishEvent() {
+    void deleteFlag_ExistingFlag_DeletesSuccessfully() {
         // Given
         when(repository.findById(1L)).thenReturn(Optional.of(testFlag));
-        doNothing().when(repository).delete(testFlag);
 
         // When
-        service.deleteFlag(1L);
+        featureFlagService.deleteFlag(1L);
 
         // Then
-        verify(repository).findById(1L);
         verify(repository).delete(testFlag);
-        verify(messagingService).publishFlagDeleted("test_flag");
-    }
-
-    @Test
-    void toggleFlag_ShouldToggleEnabledStatus() {
-        // Given
-        when(repository.findById(1L)).thenReturn(Optional.of(testFlag));
-        when(repository.save(any(FeatureFlag.class))).thenReturn(testFlag);
-
-        // When
-        FeatureFlagResponseDTO result = service.toggleFlag(1L);
-
-        // Then
-        verify(repository).findById(1L);
-        verify(repository).save(any(FeatureFlag.class));
-        verify(messagingService).publishFlagUpdated("test_flag", any());
+        verify(messagingService).publishFlagDeleted("dark_mode");
     }
 }

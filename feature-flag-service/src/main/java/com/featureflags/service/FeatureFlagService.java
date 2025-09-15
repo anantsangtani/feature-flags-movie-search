@@ -2,6 +2,7 @@ package com.featureflags.service;
 
 import com.featureflags.dto.FeatureFlagRequestDTO;
 import com.featureflags.dto.FeatureFlagResponseDTO;
+import com.featureflags.dto.FeatureFlagStatsDTO;
 import com.featureflags.entity.FeatureFlag;
 import com.featureflags.exception.ResourceNotFoundException;
 import com.featureflags.exception.DuplicateResourceException;
@@ -178,20 +179,3 @@ public class FeatureFlagService {
     }
 }
 
-// Stats DTO for dashboard
-class FeatureFlagStatsDTO {
-    private long totalFlags;
-    private long enabledFlags;
-    private long disabledFlags;
-
-    public FeatureFlagStatsDTO(long totalFlags, long enabledFlags, long disabledFlags) {
-        this.totalFlags = totalFlags;
-        this.enabledFlags = enabledFlags;
-        this.disabledFlags = disabledFlags;
-    }
-
-    // Getters
-    public long getTotalFlags() { return totalFlags; }
-    public long getEnabledFlags() { return enabledFlags; }
-    public long getDisabledFlags() { return disabledFlags; }
-}
