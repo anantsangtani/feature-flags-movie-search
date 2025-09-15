@@ -31,7 +31,10 @@ git clone https://github.com/anantsangtani/feature-flags-movie-search.git
 cd feature-flags-movie-search
 
 # 2. Set your OMDB API key
+# Linux/Mac
 echo "OMDB_API_KEY=your_api_key_here" >> .env
+# Windows PowerShell
+Set-Content -Path .env -Value "OMDB_API_KEY=your_api_key_here" -Encoding UTF8
 
 # 3. Start all services
 docker-compose up --build
@@ -69,6 +72,13 @@ curl -X POST http://localhost:8080/api/flags/2/toggle
 # Check movie service received updates
 curl http://localhost:8081/api/flags/status
 ```
+### Run Unit Tests
+```bash
+# Backend tests
+cd feature-flag-service && ./mvnw test
+cd movie-search-service && ./mvnw test
+
+```
 
 ## Development
 
@@ -91,13 +101,7 @@ cd feature-flag-frontend && npm start    # Port 3000
 cd movie-search-frontend && npm start    # Port 3001
 ```
 
-### Run Tests
-```bash
-# Backend tests
-cd feature-flag-service && ./mvnw test
-cd movie-search-service && ./mvnw test
 
-```
 
 ## API Endpoints
 
@@ -136,6 +140,7 @@ docker exec -it feature-flags-redis redis-cli ping
 
 
 ---
+
 
 
 
